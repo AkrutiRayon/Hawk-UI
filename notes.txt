@@ -1,3 +1,10 @@
+To-do
+Separate css, html and js files, 
+css- style
+js- script
+refer css and js with href
+replace localhost with hawk.k8s.net
+
 User clicks filter
       ↓
 URL gets query params
