@@ -68,7 +68,7 @@ So these URLs work:
 /akana?tag=added
 /akana?days=7
 /akana?start=2026-04-01&end=2026-04-29
-Based on the filter, your frontend app calls your teammate’s backend API using Axios:
+Based on the filter, your frontend app calls backend API using Axios:
 const response = await axios.get(url);
 Example:
 
@@ -89,7 +89,7 @@ In index.ejs, I added EJS rendering so the data appears on the page:
 That means the UI is no longer only hardcoded HTML. It now renders live data from:
 
 MongoDB Compass → backend API → Node/EJS frontend → browser
-So yes: your HTML has been converted into a Node.js rendered page. It still looks like your same UI, but now Express is serving it and EJS is filling in the data dynamically.
+HTML has been converted into a Node.js rendered page. It still looks like your same UI, but now Express is serving it and EJS is filling in the data dynamically.
 
 
 
@@ -114,7 +114,7 @@ Date range is a form:
 And each document link is clickable if your backend record has link:
 
 <a href="<%= doc.link %>" target="_blank" rel="noopener">Open document</a>
-So no, your UI is not just static HTML anymore. It is now an EJS page rendered by Node.js, with clickable routes/forms/links that call the backend through app.js.
+UI is not just static HTML anymore. It is now an EJS page rendered by Node.js, with clickable routes/forms/links that call the backend through app.js.
 
 One thing to remember: if you add new buttons/filters in the HTML, they should usually become either:
 
@@ -125,7 +125,7 @@ or:
 depending on whether it is a simple click filter or user input.
 
 
-I changed index.ejs mainly in these areas:
+changed index.ejs mainly in these areas:
 
 Added EJS page mode logic
 At the top / before the main content, the file now checks whether it is on the home page or a product page:
@@ -228,7 +228,7 @@ hawkDB
 MongoDB Compass is just the visual tool to view this database. The actual database is MongoDB running locally.
 
 2. Backend API
-Your teammate’s backend repo connects to MongoDB using the local connection string.
+backend repo connects to MongoDB using the local connection string.
 
 You run it with:
 
@@ -312,8 +312,5 @@ Backend API: localhost:3000
 Frontend UI: localhost:5000
 
 
-To do-
-Separate css, html and js files, 
-css- style
-js- script
+
 
