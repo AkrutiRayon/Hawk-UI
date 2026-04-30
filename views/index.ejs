@@ -1,0 +1,152 @@
+<% const isDetailPage = typeof product !== 'undefined' && product; %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doc Changes Tracker</title>
+<meta name="description" content="Subscribe to documentation updates across Perforce products">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/index.css">
+</head>
+<body data-product="<%= product || '' %>">
+
+<div class="page-bg"><div class="geo1"></div><div class="geo2"></div><div class="geo3"></div></div>
+
+<header class="header">
+  <div class="container header-inner">
+    <div>
+      <h1>Doc Changes Tracker</h1>
+      <p>Subscribe to documentation changes across products. Stay informed about new features, breaking changes, and updates.</p>
+    </div>
+    <div class="header-right">
+      <div class="live-status">
+        <span class="live-dot"></span> Live updates
+      </div>
+      <button class="theme-toggle" id="theme-toggle" title="Toggle dark mode">
+        <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" class="is-hidden"><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<% const activeTag = (query && query.tag) || 'all'; %>
+<% const activeDays = (query && query.days) || ''; %>
+
+<% if (!isDetailPage) { %>
+  <div id="home-page" class="container home-page">
+    <div class="search-wrap">
+      <input class="search-input" id="product-search" type="text" placeholder="Search products...">
+    </div>
+    <div class="product-grid" id="product-grid"></div>
+  </div>
+<% } %>
+
+<% if (isDetailPage) { %>
+  <div id="detail-page" class="detail-page detail-page-active container">
+    <a class="back-link" href="/">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 12 4 6l6-6"/></svg>
+      Back to products
+    </a>
+
+    <div class="product-header" id="detail-header">
+      <div class="product-meta">
+        <div class="logo-wrap" data-logo-for="<%= product %>"></div>
+        <div>
+          <h2><%= currentProduct.name %></h2>
+          <div class="desc"><%= currentProduct.description %></div>
+        </div>
+      </div>
+      <button class="subscribe-btn" id="open-modal-btn" type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M10.27 21a2 2 0 0 0 3.46 0"/>
+          <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>
+        </svg>
+        Subscribe to updates
+      </button>
+    </div>
+
+    <div class="filters-bar">
+      <form class="date-filter-form" method="GET" action="/<%= product %>">
+        <input id="from-date" type="date" name="start" class="date-input" value="<%= (query && query.start) || '' %>">
+        <input id="to-date" type="date" name="end" class="date-input" value="<%= (query && query.end) || '' %>">
+        <button class="filter-btn" type="submit">Apply</button>
+      </form>
+
+      <div class="filter-group">
+        <a href="/<%= product %>?days=1" class="filter-btn <%= activeDays === '1' ? 'active' : '' %>">24h</a>
+        <a href="/<%= product %>?days=7" class="filter-btn <%= activeDays === '7' ? 'active' : '' %>">7d</a>
+        <a href="/<%= product %>?days=30" class="filter-btn <%= activeDays === '30' ? 'active' : '' %>">30d</a>
+      </div>
+
+      <input class="search-input update-search-input" id="update-search" type="text" placeholder="Search updates...">
+    </div>
+
+    <div class="tabs" id="tabs">
+      <a href="/<%= product %>?tag=all" class="tab <%= activeTag === 'all' ? 'active' : '' %>">All</a>
+      <a href="/<%= product %>?tag=added" class="tab <%= activeTag === 'added' ? 'active' : '' %>">Added</a>
+      <a href="/<%= product %>?tag=updated" class="tab <%= activeTag === 'updated' ? 'active' : '' %>">Updated</a>
+      <a href="/<%= product %>?tag=critical" class="tab <%= activeTag === 'critical' ? 'active' : '' %>">Critical</a>
+      <a href="/<%= product %>?tag=release_notes" class="tab <%= activeTag === 'release_notes' ? 'active' : '' %>">Release Notes</a>
+    </div>
+
+    <div id="updates-feed">
+      <% if (docs && docs.length > 0) { %>
+        <% docs.forEach(doc => { %>
+          <% const changedText = doc.what_changed || ''; %>
+          <% const isLongChange = changedText.length > 180; %>
+          <div class="update-card">
+            <div class="top">
+              <h4><%= doc.title %></h4>
+              <span class="tag tag-<%= doc.tag %>"><%= doc.tag %></span>
+            </div>
+            <p class="summary <%= isLongChange ? 'collapsed' : '' %>"><%= changedText %></p>
+            <% if (isLongChange) { %>
+              <button class="read-more-btn" type="button">Read more</button>
+            <% } %>
+            <div class="time">
+              <% if (doc.createdAt) { %><%= new Date(doc.createdAt).toLocaleString() %><% } %>
+            </div>
+            <% if (doc.link) { %>
+              <a class="doc-link-btn" href="<%= doc.link %>" target="_blank" rel="noopener">Open document</a>
+            <% } %>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <div class="empty">No updates found for the selected filters.</div>
+      <% } %>
+    </div>
+  </div>
+<% } %>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal animate-in">
+    <div class="modal-inner">
+      <button class="close-btn" id="close-modal-btn" type="button">&times;</button>
+      <h3>Subscribe to Updates</h3>
+      <p class="sub" id="modal-product-name">Get notified about documentation changes</p>
+      <label>Notification channel</label>
+      <div class="channel-btns">
+        <div class="channel-btn active" data-channel="email">📧 Email</div>
+        <div class="channel-btn" data-channel="slack">💬 Slack</div>
+      </div>
+      <div id="email-field">
+        <label>Email address</label>
+        <input type="email" placeholder="you@company.com">
+      </div>
+      <label>Frequency</label>
+      <div class="freq-options">
+        <div class="freq-btn" data-freq="instant">Instant</div>
+        <div class="freq-btn active" data-freq="daily">Daily</div>
+        <div class="freq-btn" data-freq="weekly">Weekly</div>
+        <div class="freq-btn" data-freq="monthly">Monthly</div>
+      </div>
+      <button class="submit-btn" id="submit-subscribe-btn" type="button">Subscribe</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/index.js"></script>
+</body>
+</html>

@@ -1,0 +1,319 @@
+User clicks filter
+      ↓
+URL gets query params
+      ↓
+Node app reads params
+      ↓
+Calls correct backend API
+      ↓
+MongoDB data returned
+      ↓
+UI renders
+
+doc-tracker-ui/
+ ├── app.js
+ ├── package.json
+ ├── views/
+ ├── public/
+
+mkdir doc-tracker-ui\n
+  609  cd doc-tracker-ui
+  610  npm init -y
+  611  npm install express ejs axios
+  612  vim app.js
+  613  cd doc-tracker-ui
+  614  mkdir views
+  615  touch views/index.ejs
+  616  node app.js
+
+create app.js
+move html file to views/index.ejs
+
+run HTML through Node.js using Express + EJS.
+Replace Static Content with Dynamic Data
+
+Step by step
+
+In app.js, I enabled EJS rendering:
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+This tells Node/Express to render files from your views folder, including index.ejs.
+
+I added a home route:
+app.get('/', ...)
+So when you open:
+
+http://localhost:5000
+Express renders your UI home page.
+
+I added product routes like:
+app.get('/:product', ...)
+So pages like these work:
+
+http://localhost:5000/akana
+http://localhost:5000/perfecto
+http://localhost:5000/blazemeter
+Inside that route, Express reads the product from the URL:
+const product = req.params.product;
+For example, /akana means:
+
+product = "akana"
+Express checks filters from the URL query:
+tag
+days
+start
+end
+So these URLs work:
+
+/akana?tag=added
+/akana?days=7
+/akana?start=2026-04-01&end=2026-04-29
+Based on the filter, your frontend app calls your teammate’s backend API using Axios:
+const response = await axios.get(url);
+Example:
+
+http://localhost:3000/api/document/akana/getbytags/all
+The backend API talks to MongoDB, gets the records, and sends them back to your frontend Node app.
+
+Your frontend Node app sends those records into index.ejs:
+
+res.render('index', {
+  docs: response.data,
+  product
+});
+In index.ejs, I added EJS rendering so the data appears on the page:
+<% docs.forEach(doc => { %>
+  <h4><%= doc.title %></h4>
+  <p><%= doc.what_changed %></p>
+<% }) %>
+That means the UI is no longer only hardcoded HTML. It now renders live data from:
+
+MongoDB Compass → backend API → Node/EJS frontend → browser
+So yes: your HTML has been converted into a Node.js rendered page. It still looks like your same UI, but now Express is serving it and EJS is filling in the data dynamically.
+
+
+
+Product cards now route to Node pages like:
+
+/akana
+/perfecto
+/blazemeter
+/puppet
+/p4
+Filters are also clickable links:
+
+<a href="/<%= product %>?days=1" class="filter-btn">24h</a>
+<a href="/<%= product %>?tag=added" class="tab">Added</a>
+Date range is a form:
+
+<form method="GET" action="/<%= product %>">
+  <input type="date" name="start">
+  <input type="date" name="end">
+  <button type="submit">Apply</button>
+</form>
+And each document link is clickable if your backend record has link:
+
+<a href="<%= doc.link %>" target="_blank" rel="noopener">Open document</a>
+So no, your UI is not just static HTML anymore. It is now an EJS page rendered by Node.js, with clickable routes/forms/links that call the backend through app.js.
+
+One thing to remember: if you add new buttons/filters in the HTML, they should usually become either:
+
+<a href="/<%= product %>?tag=something">
+or:
+
+<form method="GET" action="/<%= product %>">
+depending on whether it is a simple click filter or user input.
+
+
+I changed index.ejs mainly in these areas:
+
+Added EJS page mode logic
+At the top / before the main content, the file now checks whether it is on the home page or a product page:
+
+<% const isDetailPage = typeof product !== 'undefined' && product; %>
+So:
+
+/            → home page
+/akana       → Akana detail page
+/perfecto    → Perfecto detail page
+Made product cards clickable
+Instead of only showing static product cards, the products now link to Node routes:
+
+<a class="product-card" href="/akana">
+<a class="product-card" href="/blazemeter">
+<a class="product-card" href="/p4">
+<a class="product-card" href="/perfecto">
+<a class="product-card" href="/puppet">
+Added dynamic product detail section
+When you open a product page like /akana, index.ejs now shows that product’s header dynamically:
+
+<h2><%= currentProduct.name %></h2>
+<div class="desc"><%= currentProduct.description %></div>
+Added filter links
+These links call your Node route with query params:
+
+<a href="/<%= product %>?days=1">24h</a>
+<a href="/<%= product %>?days=7">7d</a>
+<a href="/<%= product %>?days=30">30d</a>
+And tag filters:
+
+<a href="/<%= product %>?tag=all">All</a>
+<a href="/<%= product %>?tag=added">Added</a>
+<a href="/<%= product %>?tag=updated">Updated</a>
+<a href="/<%= product %>?tag=critical">Critical</a>
+<a href="/<%= product %>?tag=release_notes">Release Notes</a>
+Added date range form
+This lets the user select dates and submit them to Express:
+
+<form method="GET" action="/<%= product %>">
+  <input type="date" name="start">
+  <input type="date" name="end">
+  <button type="submit">Apply</button>
+</form>
+Added EJS loop for MongoDB/API data
+This is the most important change. It renders live records from your backend:
+
+<% docs.forEach(doc => { %>
+  <div class="update-card">
+    <h4><%= doc.title %></h4>
+    <p><%= doc.what_changed %></p>
+  </div>
+<% }) %>
+Added clickable document links
+If a database record has a link, it now appears as a clickable link:
+
+<a href="<%= doc.link %>" target="_blank" rel="noopener">Open document</a>
+Removed Source and Commit from UI
+You asked to remove:
+
+Source: github | Commit: bm201 |
+So I removed doc.source_name and doc.commit_id from the visible UI. It now only shows the date/time.
+
+In short: I converted the static display part of your HTML into dynamic EJS so Node can render live backend/MongoDB data while keeping your UI design mostly the same.
+
+
+Terminal 1: backend API
+
+cd /Users/akruti.rayon/hawk-api-server
+npm start
+This should run the backend on:
+
+http://localhost:3000
+
+Terminal 2: frontend UI
+
+cd /Users/akruti.rayon/doc-tracker-ui
+node app.js
+This runs your Node/EJS UI on:
+
+http://localhost:5000
+
+
+Your setup has 3 parts:
+
+MongoDB Compass / local MongoDB
+        ↓
+Backend API: hawk-api-server on localhost:3000
+        ↓
+Frontend UI: doc-tracker-ui on localhost:5000
+        ↓
+Browser
+1. MongoDB
+Your database is local:
+
+mongodb://localhost:27017/hawkDB
+That means MongoDB is running on your Mac, and the database name is:
+
+hawkDB
+MongoDB Compass is just the visual tool to view this database. The actual database is MongoDB running locally.
+
+2. Backend API
+Your teammate’s backend repo connects to MongoDB using the local connection string.
+
+You run it with:
+
+cd /Users/akruti.rayon/hawk-api-server
+npm start
+This starts the backend server on:
+
+http://localhost:3000
+The backend has routes like:
+
+http://localhost:3000/api/document/akana/getbytags/all
+http://localhost:3000/api/document/akana/getbytags/added
+http://localhost:3000/api/document/akana/getbydays/7
+http://localhost:3000/api/document/akana/getbydaterange/start/end
+When the backend receives one of these requests, it queries MongoDB and returns JSON data.
+
+3. Frontend UI
+Your frontend is a separate Node/Express app.
+
+You run it with:
+
+cd /Users/akruti.rayon/doc-tracker-ui
+node app.js
+This starts the UI server on:
+
+http://localhost:5000
+This line in app.js sets that port:
+
+app.listen(5000, () => {
+  console.log('UI running on http://localhost:5000');
+});
+4. How frontend calls backend
+In your frontend app.js, when someone opens:
+
+http://localhost:5000/akana
+Express reads:
+
+const product = req.params.product;
+So:
+
+product = "akana"
+Then frontend builds a backend API URL, for example:
+
+url = `http://localhost:3000/api/document/${product}/getbytags/all`;
+That becomes:
+
+http://localhost:3000/api/document/akana/getbytags/all
+Then Axios calls the backend:
+
+const response = await axios.get(url);
+The backend returns MongoDB records.
+
+Then frontend sends those records to index.ejs:
+
+res.render('index', {
+  docs: response.data,
+  product,
+  currentProduct: products[product],
+  query: req.query
+});
+5. How data appears in UI
+Inside index.ejs, EJS loops through the records:
+
+<% docs.forEach(doc => { %>
+  <h4><%= doc.title %></h4>
+  <p><%= doc.what_changed %></p>
+<% }) %>
+So the flow is:
+
+Browser opens localhost:5000/akana
+Frontend Node app calls localhost:3000 API
+Backend API reads MongoDB hawkDB
+Backend returns data as JSON
+Frontend passes JSON to index.ejs
+index.ejs renders HTML cards
+Browser displays live data
+Important ports
+
+MongoDB: localhost:27017
+Backend API: localhost:3000
+Frontend UI: localhost:5000
+
+
+To do-
+Separate css, html and js files, 
+css- style
+js- script
+
