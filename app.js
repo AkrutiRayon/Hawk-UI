@@ -31,6 +31,7 @@ const normalizeBaseURL = (value) => {
 };
 
 const baseURL = normalizeBaseURL(process.env.BASE_URL);
+console.log(`Backend API base URL: ${baseURL}`);
 
 const app = express();
 
@@ -83,6 +84,7 @@ app.get('/:product', async (req, res) => {
       url = `${baseURL}/api/document/${product}/getbytags/all`;
     }
 
+    console.log(`Fetching docs from: ${url}`);
     const response = await axios.get(url);
 
 
