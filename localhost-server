@@ -1,0 +1,54 @@
+To make the browser URL show hawk.k8s.net, your UI app must run on a server behind that domain. Right now node app.js runs only on your laptop at:
+
+http://localhost:5000
+So the browser will show localhost.
+
+Typical deployment flow:
+
+Put doc-tracker-ui on the server/Kubernetes environment that serves hawk.k8s.net.
+Run the Node UI there, usually on port 5000.
+Configure ingress/reverse proxy so a path or host routes to the UI.
+Example options:
+
+http://hawk.k8s.net/ui
+  -> doc-tracker-ui service on port 5000
+or:
+
+http://hawk-ui.k8s.net
+  -> doc-tracker-ui service on port 5000
+You’ll need something like this in Kubernetes:
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: doc-tracker-ui
+spec:
+  selector:
+    app: doc-tracker-ui
+  ports:
+    - port: 80
+      targetPort: 5000
+And an ingress route:
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: doc-tracker-ui
+spec:
+  rules:
+    - host: hawk.k8s.net
+      http:
+        paths:
+          - path: /ui
+            pathType: Prefix
+            backend:
+              service:
+                name: doc-tracker-ui
+                port:
+                  number: 80
+Then you’d open:
+
+http://hawk.k8s.net/ui
+One important caution: your API already seems to use hawk.k8s.net/api/.... If you also serve UI from the same host, use a separate path like /ui, or configure the root / carefully so it does not conflict with /api.
+
+For local development, seeing localhost:5000 is normal and correct. For a hawk URL, the app must be deployed behind the hawk domain.
