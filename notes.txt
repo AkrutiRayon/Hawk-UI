@@ -317,3 +317,33 @@ Separate css, html and js files,
 css- style
 js- script
 
+ 
+For the error fetching data-
+
+It had URLs like:
+hawk.k8s.net/api/document/akana/getbytags/all
+That is missing http://, so Axios threw:
+Invalid URL
+
+Added loading for /Users/akruti.rayon/doc-tracker-ui/env/.env.
+Read BASE_URL=hawk.k8s.net.
+Normalize it to:
+http://hawk.k8s.net
+Updated API calls to use:
+`${baseURL}/api/document/${product}/getbytags/all`
+Commands/checks I ran:
+
+
+http://hawk.k8s.net/api/document/<product>/getbytags/all
+
+
+Added-
+const baseURL = normalizeBaseURL(process.env.BASE_URL);
+
+This line reads the BASE_URL environment variable from Node's process.env, passes that value into a normalization function named normalizeBaseURL, and stores the returned value in a constant called baseURL. The intent is to centralize and standardize the application's base URL (for building API endpoints, absolute links, etc.) so the rest of the code can rely on a consistent format.
+
+Important runtime details: process.env values are strings or undefined (never other types), so BASE_URL can be undefined if not set. normalizeBaseURL therefore needs to handle undefined/null and return a safe, predictable string. The const binding prevents reassignment of baseURL later in the same scope, which is usually desirable for a configuration value.
+
+Common normalization behaviors include ensuring a scheme (http/https), stripping or adding a trailing slash consistently, and removing duplicated slashes. Validation should also guard against malformed input (an accidental empty string, a relative path, or user-supplied values that could break URL construction).
+
+Suggested defensive improvements include providing a sensible default and validating the final URL. Example patterns:

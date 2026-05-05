@@ -1,8 +1,36 @@
 const express = require('express');
 const axios = require('axios');
+const fs = require('fs');
 const path = require('path');
 
-const baseURL = process.env.BASE_URL;
+const loadEnvFile = (filePath) => {
+  if (!fs.existsSync(filePath)) return;
+
+  const lines = fs.readFileSync(filePath, 'utf8').split(/\r?\n/);
+  lines.forEach((line) => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) return;
+
+    const separatorIndex = trimmed.indexOf('=');
+    if (separatorIndex === -1) return;
+
+    const key = trimmed.slice(0, separatorIndex).trim();
+    const value = trimmed.slice(separatorIndex + 1).trim().replace(/^["']|["']$/g, '');
+    if (key && process.env[key] === undefined) {
+      process.env[key] = value;
+    }
+  });
+};
+
+loadEnvFile(path.join(__dirname, 'env', '.env'));
+
+const normalizeBaseURL = (value) => {
+  const fallback = 'http://localhost:3000';
+  const raw = (value || fallback).trim().replace(/\/+$/, '');
+  return /^https?:\/\//i.test(raw) ? raw : `http://${raw}`;
+};
+
+const baseURL = normalizeBaseURL(process.env.BASE_URL);
 
 const app = express();
 
@@ -46,13 +74,13 @@ app.get('/:product', async (req, res) => {
     let url = '';
 
     if (tag) {
-      url = `http://hawk.k8s.net/api/document/${product}/getbytags/${tag}`;
+      url = `${baseURL}/api/document/${product}/getbytags/${tag}`;
     } else if (days) {
-      url = `http://hawk.k8s.net/api/document/${product}/getbydays/${days}`;
+      url = `${baseURL}/api/document/${product}/getbydays/${days}`;
     } else if (start && end) {
-      url = `http://hawk.k8s.net/api/document/${product}/getbydaterange/${start}/${end}`;
+      url = `${baseURL}/api/document/${product}/getbydaterange/${start}/${end}`;
     } else {
-      url = `http://hawk.k8s.net/api/document/${product}/getbytags/all`;
+      url = `${baseURL}/api/document/${product}/getbytags/all`;
     }
 
     const response = await axios.get(url);
@@ -66,7 +94,7 @@ app.get('/:product', async (req, res) => {
     });
 
   } catch (error) {
-    console.error(error);
+    console.error(`Error fetching data from ${error.config?.url || 'backend API'}:`, error.message);
     res.send("Error fetching data");
   }
 });
