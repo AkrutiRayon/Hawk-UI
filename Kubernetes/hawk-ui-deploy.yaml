@@ -1,0 +1,54 @@
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: hawk-ui-svc
+  namespace: hawk
+spec:
+  type: ClusterIP
+  selector:
+    app: hawk-ui-server
+  ports:
+  - port: 5000
+    targetPort: 5000
+    protocol: TCP
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: hawk
+  labels:
+    app: hawk-ui-server
+  name: hawk-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hawk-ui-servers
+  template:
+    metadata:
+      labels:
+        app: hawk-ui-server
+    spec:
+      containers:
+      - image: immnan/hawk-ui:0.1.2
+        name: hawk-ui
+        ports:
+        - containerPort: 5000
+        env:  
+        - name: NODE_ENV
+          value: "production"
+        - name: BASE_URL
+          value: "http://hawk-apiserver-svc:3000"
+        - name: BASE_PATH
+          value: "/v1"
+#        volumeMounts:
+#        - name: secret-volume
+#          mountPath: /etc/hawk-apiserver/
+#          readOnly: true
+#      volumes:
+#      - name: secret-volume
+#        secret: 
+#          secretName: hawk-api-secret
