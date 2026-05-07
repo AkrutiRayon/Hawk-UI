@@ -30,15 +30,41 @@ const normalizeBaseURL = (value) => {
   return /^https?:\/\//i.test(raw) ? raw : `http://${raw}`;
 };
 
+const normalizeBasePath = (value) => {
+  const raw = (value || '').trim();
+  if (!raw || raw === '/') return '';
+  const withLeadingSlash = raw.startsWith('/') ? raw : `/${raw}`;
+  return withLeadingSlash.replace(/\/+$/, '');
+};
+
 const baseURL = normalizeBaseURL(process.env.BASE_URL);
+const basePath = normalizeBasePath(process.env.BASE_PATH);
 console.log(`Backend API base URL: ${baseURL}`);
+console.log(`UI base path: ${basePath || '/'}`);
 
 const app = express();
+
+const withBasePath = (routePath = '/') => {
+  const suffix = routePath.startsWith('/') ? routePath : `/${routePath}`;
+  return `${basePath}${suffix}` || '/';
+};
+
+const knownProducts = Object.keys({
+  akana: true,
+  blazemeter: true,
+  p4: true,
+  perfecto: true,
+  puppet: true
+});
 
 // EJS setup 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-app.use(express.static(path.join(__dirname, 'public')));
+app.locals.basePath = basePath;
+app.locals.withBasePath = withBasePath;
+app.use(withBasePath('/'), express.static(path.join(__dirname, 'public')));
+
+const router = express.Router();
 
 const products = {
   akana: { id: 'akana', name: 'Akana', description: 'Full Lifecycle API Management' },
@@ -49,7 +75,7 @@ const products = {
 };
 
 // HOME ROUTE
-app.get('/', (req, res) => {
+router.get('/', (req, res) => {
   res.render('index', {
     docs: [],
     product: null,
@@ -60,7 +86,7 @@ app.get('/', (req, res) => {
 
 
 // PRODUCT ROUTE
-app.get('/:product', async (req, res) => {
+router.get('/:product', async (req, res) => {
   try {
     const product = req.params.product;
     if (!products[product]) {
@@ -99,6 +125,21 @@ app.get('/:product', async (req, res) => {
     console.error(`Error fetching data from ${error.config?.url || 'backend API'}:`, error.message);
     res.send("Error fetching data");
   }
+});
+
+app.use(withBasePath('/'), router);
+
+if (basePath) {
+  app.get('/', (req, res) => {
+    res.redirect(basePath);
+  });
+}
+
+app.get('/:product', (req, res, next) => {
+  if (knownProducts.includes(req.params.product)) {
+    return res.redirect(withBasePath(`/${req.params.product}`));
+  }
+  return next();
 });
 
 app.listen(5000, () => {
