@@ -17,13 +17,18 @@ const products = [
 const now = Date.now();
 const h = n => new Date(now - n*3600000);
 const d = n => new Date(now - n*86400000);
+const basePath = (document.body?.dataset?.basePath || '').replace(/\/+$/, '');
+const withBasePath = (routePath = '/') => {
+  const suffix = routePath.startsWith('/') ? routePath : `/${routePath}`;
+  return `${basePath}${suffix}`;
+};
 
 function renderProducts(filter = "") {
   const grid = document.getElementById("product-grid");
   if (!grid) return;
   const filtered = products.filter(p => (p.name + p.description).toLowerCase().includes(filter.toLowerCase()));
   grid.innerHTML = filtered.map(p => `
-    <a class="product-card animate-in" href="/${p.id}">
+    <a class="product-card animate-in" href="${withBasePath(`/${p.id}`)}">
       <div class="logo-wrap">${logos[p.id]}</div>
       <div><h3>${p.name}</h3><div class="desc">${p.description}</div><span class="cat">${p.category}</span></div>
       <div class="arrow"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="m8 16 6-6-6-6"/></svg></div>

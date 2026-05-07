@@ -7,9 +7,9 @@
 <title>Doc Changes Tracker</title>
 <meta name="description" content="Subscribe to documentation updates across Perforce products">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="<%= withBasePath('/css/index.css') %>">
 </head>
-<body data-product="<%= product || '' %>">
+<body data-product="<%= product || '' %>" data-base-path="<%= basePath || '' %>">
 
 <div class="page-bg"><div class="geo1"></div><div class="geo2"></div><div class="geo3"></div></div>
 
@@ -45,7 +45,7 @@
 
 <% if (isDetailPage) { %>
   <div id="detail-page" class="detail-page detail-page-active container">
-    <a class="back-link" href="/">
+    <a class="back-link" href="<%= withBasePath('/') %>">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 12 4 6l6-6"/></svg>
       Back to products
     </a>
@@ -68,27 +68,27 @@
     </div>
 
     <div class="filters-bar">
-      <form class="date-filter-form" method="GET" action="/<%= product %>">
+      <form class="date-filter-form" method="GET" action="<%= withBasePath('/' + product) %>">
         <input id="from-date" type="date" name="start" class="date-input" value="<%= (query && query.start) || '' %>">
         <input id="to-date" type="date" name="end" class="date-input" value="<%= (query && query.end) || '' %>">
         <button class="filter-btn" type="submit">Apply</button>
       </form>
 
       <div class="filter-group">
-        <a href="/<%= product %>?days=1" class="filter-btn <%= activeDays === '1' ? 'active' : '' %>">24h</a>
-        <a href="/<%= product %>?days=7" class="filter-btn <%= activeDays === '7' ? 'active' : '' %>">7d</a>
-        <a href="/<%= product %>?days=30" class="filter-btn <%= activeDays === '30' ? 'active' : '' %>">30d</a>
+        <a href="<%= withBasePath('/' + product) %>?days=1" class="filter-btn <%= activeDays === '1' ? 'active' : '' %>">24h</a>
+        <a href="<%= withBasePath('/' + product) %>?days=7" class="filter-btn <%= activeDays === '7' ? 'active' : '' %>">7d</a>
+        <a href="<%= withBasePath('/' + product) %>?days=30" class="filter-btn <%= activeDays === '30' ? 'active' : '' %>">30d</a>
       </div>
 
       <input class="search-input update-search-input" id="update-search" type="text" placeholder="Search updates...">
     </div>
 
     <div class="tabs" id="tabs">
-      <a href="/<%= product %>?tag=all" class="tab <%= activeTag === 'all' ? 'active' : '' %>">All</a>
-      <a href="/<%= product %>?tag=added" class="tab <%= activeTag === 'added' ? 'active' : '' %>">Added</a>
-      <a href="/<%= product %>?tag=updated" class="tab <%= activeTag === 'updated' ? 'active' : '' %>">Updated</a>
-      <a href="/<%= product %>?tag=critical" class="tab <%= activeTag === 'critical' ? 'active' : '' %>">Critical</a>
-      <a href="/<%= product %>?tag=release_notes" class="tab <%= activeTag === 'release_notes' ? 'active' : '' %>">Release Notes</a>
+      <a href="<%= withBasePath('/' + product) %>?tag=all" class="tab <%= activeTag === 'all' ? 'active' : '' %>">All</a>
+      <a href="<%= withBasePath('/' + product) %>?tag=added" class="tab <%= activeTag === 'added' ? 'active' : '' %>">Added</a>
+      <a href="<%= withBasePath('/' + product) %>?tag=updated" class="tab <%= activeTag === 'updated' ? 'active' : '' %>">Updated</a>
+      <a href="<%= withBasePath('/' + product) %>?tag=critical" class="tab <%= activeTag === 'critical' ? 'active' : '' %>">Critical</a>
+      <a href="<%= withBasePath('/' + product) %>?tag=release_notes" class="tab <%= activeTag === 'release_notes' ? 'active' : '' %>">Release Notes</a>
     </div>
 
     <div id="updates-feed">
@@ -147,6 +147,6 @@
   </div>
 </div>
 
-<script src="/js/index.js"></script>
+<script src="<%= withBasePath('/js/index.js') %>"></script>
 </body>
 </html>
