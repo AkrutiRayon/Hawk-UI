@@ -9,9 +9,13 @@ const logos = {
 const products = [
   { id:"akana", name:"Akana", description:"Full Lifecycle API Management", category:"API Management" },
   { id:"blazemeter", name:"BlazeMeter", description:"The Complete Continuous Testing Platform", category:"Testing" },
+  { id:"jrebel", name:"JRebel", description:"Java development productivity and instant reload", category:"Java", logoPath:"/images/jrebel.png", displayOnly:true },
+  { id:"openlogic", name:"OpenLogic", description:"Enterprise open source support and services", category:"Open Source", logoPath:"/images/openlogic.png", displayOnly:true },
   { id:"p4", name:"P4", description:"Version Control + Code Review", category:"Version Control" },
   { id:"perfecto", name:"Perfecto", description:"Web and Mobile App Testing", category:"Testing" },
   { id:"puppet", name:"Puppet", description:"Infrastructure Automation & Compliance", category:"Infrastructure" },
+  { id:"qac", name:"QAC", description:"Static code analysis for C and C++ quality", category:"Code Quality", logoPath:"/images/qac.png", displayOnly:true },
+  { id:"zend", name:"Zend", description:"Enterprise PHP application development and support", category:"PHP", logoPath:"/images/zend.png", displayOnly:true },
 ];
 
 const now = Date.now();
@@ -27,12 +31,24 @@ function renderProducts(filter = "") {
   const grid = document.getElementById("product-grid");
   if (!grid) return;
   const filtered = products.filter(p => (p.name + p.description).toLowerCase().includes(filter.toLowerCase()));
-  grid.innerHTML = filtered.map(p => `
-    <a class="product-card animate-in" href="${withBasePath(`/${p.id}`)}">
-      <div class="logo-wrap">${logos[p.id]}</div>
+  grid.innerHTML = filtered.map(p => {
+    const href = p.displayOnly ? "#" : withBasePath(`/${p.id}`);
+    const displayOnlyAttrs = p.displayOnly ? ` data-display-only="true" aria-disabled="true"` : "";
+    const logoMarkup = p.logoPath
+      ? `<img src="${withBasePath(p.logoPath)}" alt="${p.name}" class="product-logo-img">`
+      : logos[p.id];
+
+    return `
+    <a class="product-card animate-in${p.displayOnly ? " display-only" : ""}" href="${href}"${displayOnlyAttrs}>
+      <div class="logo-wrap">${logoMarkup}</div>
       <div><h3>${p.name}</h3><div class="desc">${p.description}</div><span class="cat">${p.category}</span></div>
       <div class="arrow"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="m8 16 6-6-6-6"/></svg></div>
-    </a>`).join("");
+    </a>`;
+  }).join("");
+
+  grid.querySelectorAll("[data-display-only='true']").forEach(card => {
+    card.addEventListener("click", event => event.preventDefault());
+  });
 }
 
 function filterRenderedUpdates() {

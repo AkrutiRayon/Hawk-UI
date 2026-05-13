@@ -140,3 +140,221 @@ html.dark .header{background:rgba(10,22,40,.4);border-bottom-color:rgba(255,255,
 .update-search-input{max-width:240px;padding:8px 12px 8px 36px;font-size:.8125rem;background-size:14px;background-position:10px center}
 .product-logo-img{width:36px;height:36px;object-fit:contain}
 
+/* Compact hero banner */
+body{
+  font-family:"Salesforce Sans","Inter","Helvetica Neue",Arial,sans-serif;
+  background:#f4f6fb;
+}
+html.dark body{
+  background:#0b1738;
+}
+.page-bg{
+  background:#f4f6fb url("../images/hero-blue.svg") top center/100% 5cm no-repeat;
+}
+html.dark .page-bg{
+  background:#0b1738 url("../images/hero-blue.svg") top center/100% 5cm no-repeat;
+}
+.page-bg::before,
+.page-bg::after{display:none}
+.header{
+  min-height:5cm;
+  padding:0;
+  overflow:hidden;
+  background:transparent;
+  border-bottom:none;
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+}
+html.dark .header{background:transparent;border-bottom:none}
+.header-inner{
+  max-width:none;
+  min-height:5cm;
+  padding:0 112px;
+  display:grid;
+  grid-template-columns:1fr;
+  place-items:center;
+  position:relative;
+}
+.hero-copy{
+  max-width:none;
+  padding:10px 24px 0;
+  text-align:center;
+}
+.header h1{
+  font-size:1.85rem;
+  line-height:1.15;
+  font-weight:700;
+  white-space:nowrap;
+}
+.header p{
+  max-width:980px;
+  margin:8px auto 0;
+  font-size:.9rem;
+  line-height:1.35;
+  font-weight:500;
+}
+.header-right{
+  position:absolute;
+  top:18px;
+  right:32px;
+}
+.home-brand{
+  position:absolute;
+  top:18px;
+  left:32px;
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  color:#fff;
+  font-size:1.25rem;
+  font-weight:400;
+  line-height:1;
+  letter-spacing:0;
+  z-index:1;
+}
+.home-brand-logo{
+  width:32px;
+  height:32px;
+  object-fit:contain;
+  display:block;
+}
+.subscribe-btn{
+  background:#4437ff;
+  border:1px solid #4437ff;
+  box-shadow:0 10px 22px rgba(68,55,255,.24);
+}
+.subscribe-btn:hover{
+  background:#3328d9;
+  border-color:#3328d9;
+  box-shadow:0 12px 26px rgba(68,55,255,.3);
+}
+body.detail-view .page-bg,
+html.dark body.detail-view .page-bg{
+  background:#f4f6fb url("../images/hero-blue.svg") top center/100% 96px no-repeat;
+}
+html.dark body.detail-view .page-bg{
+  background:#0b1738 url("../images/hero-blue.svg") top center/100% 96px no-repeat;
+}
+body.detail-view .header,
+body.detail-view .header-inner{
+  min-height:96px;
+}
+body.detail-view .header{
+  background:transparent;
+}
+body.detail-view .detail-page-active{
+  padding-top:12px;
+}
+.home-page{padding-top:24px}
+.search-wrap{margin-top:0}
+.date-input,
+.filter-btn,
+.update-search-input,
+.doc-link-btn{
+  border:1px solid rgba(15,23,42,.18);
+  box-shadow:0 1px 2px rgba(15,23,42,.04);
+}
+.date-input:focus,
+.update-search-input:focus{
+  border-color:#2563eb;
+  box-shadow:0 0 0 3px rgba(37,99,235,.12);
+}
+.update-card{
+  border:1px solid rgba(15,23,42,.14);
+  box-shadow:0 8px 22px rgba(15,23,42,.06);
+}
+html.dark .date-input,
+html.dark .filter-btn,
+html.dark .update-search-input,
+html.dark .doc-link-btn{
+  border-color:rgba(148,163,184,.28);
+  background:#111c31;
+}
+html.dark .update-card{
+  border-color:rgba(148,163,184,.22);
+  background:#111c31;
+  box-shadow:0 12px 28px rgba(0,0,0,.24);
+}
+.product-card{
+  background:rgba(255,255,255,.96);
+  border-color:rgba(9,12,64,.08);
+  box-shadow:0 10px 28px rgba(9,12,64,.08);
+}
+.product-card:hover{
+  background:#4437ff;
+  border-color:#4437ff;
+  box-shadow:0 18px 36px rgba(68,55,255,.24);
+  transform:translateY(-3px);
+}
+.product-card:hover h3,
+.product-card:hover .desc,
+.product-card:hover .cat,
+.product-card:hover .arrow{color:#fff}
+.product-card:hover .cat{
+  background:rgba(255,255,255,.16);
+}
+.product-card:hover .logo-wrap{
+  background:#fff;
+}
+html.dark .product-card{
+  background:#13244c;
+  border-color:rgba(120,145,255,.32);
+}
+html.dark .product-card h3{
+  color:#f8fbff;
+}
+html.dark .product-card .desc{
+  color:#c8d4ea;
+}
+html.dark .product-card .cat{
+  background:rgba(255,255,255,.1);
+  color:#dbe6fa;
+}
+html.dark .product-card .arrow{
+  color:#9bb7ff;
+}
+html.dark .product-card:hover{
+  background:#4437ff;
+  border-color:#6d63ff;
+}
+
+@media(max-width:760px){
+  .page-bg{
+    background:#f4f6fb url("../images/hero-blue.svg") top center/auto 5cm no-repeat;
+  }
+  html.dark .page-bg{
+    background:#0b1738 url("../images/hero-blue.svg") top center/auto 5cm no-repeat;
+  }
+  .header{min-height:5cm}
+  .header-inner{
+    min-height:5cm;
+    padding:0 20px;
+  }
+  body.detail-view .header,
+  body.detail-view .header-inner{
+    min-height:96px;
+  }
+  .header-right{
+    right:20px;
+    top:16px;
+  }
+  .home-brand{
+    left:20px;
+    top:16px;
+    gap:8px;
+    font-size:1rem;
+  }
+  .home-brand-logo{
+    width:26px;
+    height:26px;
+  }
+  .hero-copy{
+    padding:42px 8px 0;
+  }
+  .header h1{
+    font-size:1.05rem;
+  }
+  .header p{
+    font-size:.78rem;
+  }
+}

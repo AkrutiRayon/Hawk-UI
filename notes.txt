@@ -351,3 +351,82 @@ Important runtime details: process.env values are strings or undefined (never ot
 Common normalization behaviors include ensuring a scheme (http/https), stripping or adding a trailing slash consistently, and removing duplicated slashes. Validation should also guard against malformed input (an accidental empty string, a relative path, or user-supplied values that could break URL construction).
 
 Suggested defensive improvements include providing a sensible default and validating the final URL. Example patterns:
+
+
+That localhost:5000/blazemeter entry is expected.
+
+Your browser is not calling hawk.k8s.net directly. The flow is:
+
+Browser
+  -> http://localhost:5000/blazemeter
+  -> Express app.js on localhost:5000
+  -> Axios server-side request to http://hawk.k8s.net/api/document/blazemeter/getbytags/all
+  -> Express renders HTML back to browser
+So Chrome DevTools Network only shows the browser-facing request: localhost:5000/blazemeter.
+
+BASE_URL=hawk.k8s.net is used inside Node/Express on the server side. That Axios call does not appear in the browser Network tab because it happens from app.js, not from frontend JavaScript.
+
+To see the backend URL, add/log this in app.js before Axios:
+
+console.log('Fetching:', url);
+Then restart:
+
+cd /Users/akruti.rayon/doc-tracker-ui
+Ctrl+C
+node app.js
+When you click a product, your terminal should show something like:
+
+Fetching: http://hawk.k8s.net/api/document/blazemeter/getbytags/all
+
+
+
+what changed to run it in localhost for now, without making any changes in basepath-
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  const uiPath = basePath || '';
+  console.log(`UI running on http://localhost:${PORT}${uiPath}`);
+});
+
+
+I changed only app.js.
+
+Exact changes:
+
+In both res.render('index', ...) calls, I added:
+basePath,
+withBasePath
+So EJS can use this safely:
+
+<%= withBasePath('/css/index.css') %>
+That fixes the error:
+
+withBasePath is not defined
+I changed the server startup from hardcoded port 5000 to:
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  const uiPath = basePath || '';
+  console.log(`UI running on http://localhost:${PORT}${uiPath}`);
+});
+So locally it logs:
+
+UI running on http://localhost:5000
+and if deployed with BASE_PATH=/v1, it logs with /v1.
+
+For GitHub/deployment to https://hawk.k8s.net/v1: you should not change code.
+
+Keep this in Kubernetes/hawk-ui-deploy.yaml:
+
+- name: BASE_URL
+  value: "http://hawk-apiserver-svc:3000"
+- name: BASE_PATH
+  value: "/v1"
+For local testing, keep /Users/akruti.rayon/doc-tracker-ui/env/.env like this:
+
+BASE_URL=hawk.k8s.net
+Do not add BASE_PATH locally.
+
+So the rule is:
+
+Local:      no BASE_PATH  -> http://localhost:5000
+Production: BASE_PATH=/v1 -> https://hawk.k8s.net/v1
+I also found why it was “still not working”: an old Node process was already using port 5000, so your browser was seeing the old broken server. I stopped that old process and started the fixed one.

@@ -9,16 +9,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="<%= withBasePath('/css/index.css') %>">
 </head>
-<body data-product="<%= product || '' %>" data-base-path="<%= basePath || '' %>">
+<body class="<%= isDetailPage ? 'detail-view' : 'home-view' %>" data-product="<%= product || '' %>" data-base-path="<%= basePath || '' %>">
 
 <div class="page-bg"><div class="geo1"></div><div class="geo2"></div><div class="geo3"></div></div>
 
 <header class="header">
   <div class="container header-inner">
-    <div>
-      <h1>Doc Changes Tracker</h1>
-      <p>Subscribe to documentation changes across products. Stay informed about new features, breaking changes, and updates.</p>
-    </div>
+    <% if (!isDetailPage) { %>
+      <a class="home-brand" href="<%= withBasePath('/') %>" aria-label="Perforce home">
+        <img src="<%= withBasePath('/images/perforce-mark-white.png') %>" alt="" class="home-brand-logo">
+        <span>perforce</span>
+      </a>
+      <div class="hero-copy">
+        <h1>Welcome to Perforce Documentation Center</h1>
+        <p>Subscribe to documentation changes across products. Stay informed about new features, breaking changes, and updates.</p>
+      </div>
+    <% } %>
     <div class="header-right">
       <div class="live-status">
         <span class="live-dot"></span> Live updates
@@ -109,7 +115,7 @@
               <% if (doc.createdAt) { %><%= new Date(doc.createdAt).toLocaleString() %><% } %>
             </div>
             <% if (doc.link) { %>
-              <a class="doc-link-btn" href="<%= doc.link %>" target="_blank" rel="noopener">Open document</a>
+              <a class="doc-link-btn" href="<%= doc.link %>" target="_blank" rel="noopener">View article</a>
             <% } %>
           </div>
         <% }) %>

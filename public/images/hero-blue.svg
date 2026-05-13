@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 600" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2f7dff"/>
+      <stop offset="0.28" stop-color="#4636ff"/>
+      <stop offset="0.48" stop-color="#5b00ff"/>
+      <stop offset="0.74" stop-color="#07185e"/>
+      <stop offset="1" stop-color="#02073a"/>
+    </linearGradient>
+    <linearGradient id="waveA" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#337fff"/>
+      <stop offset="0.45" stop-color="#4a26ff"/>
+      <stop offset="1" stop-color="#6700ff"/>
+    </linearGradient>
+    <linearGradient id="waveB" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#265dff"/>
+      <stop offset="0.55" stop-color="#5400ff"/>
+      <stop offset="1" stop-color="#6722ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="2048" height="600" fill="url(#bg)"/>
+  <path d="M0 0h780c120 0 195 16 250 73l250 261c56 59 59 150 6 212L1008 600H0V0Z" fill="url(#waveA)" opacity=".92"/>
+  <path d="M625 0h455c88 0 150 20 209 68l271 221c81 66 77 190-9 249L1457 600H850l315-355c54-61 41-158-27-203C1097 15 1046 0 986 0H625Z" fill="url(#waveB)" opacity=".9"/>
+  <path d="M1110 0h938v600h-536l-15-1 190-82c128-55 150-224 40-310L1463 0h-353Z" fill="#02073a" opacity=".76"/>
+</svg>

@@ -80,7 +80,9 @@ router.get('/', (req, res) => {
     docs: [],
     product: null,
     currentProduct: null,
-    query: {}
+    query: {},
+    basePath,
+    withBasePath
   });
 });
 
@@ -118,7 +120,9 @@ router.get('/:product', async (req, res) => {
       docs: Array.isArray(response.data) ? response.data : [],
       product,
       currentProduct: products[product],
-      query: req.query
+      query: req.query,
+      basePath,
+      withBasePath
     });
 
   } catch (error) {
@@ -142,6 +146,8 @@ app.get('/:product', (req, res, next) => {
   return next();
 });
 
-app.listen(5000, () => {
-  console.log('UI running on http://localhost:5000');
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  const uiPath = basePath || '';
+  console.log(`UI running on http://localhost:${PORT}${uiPath}`);
 });
