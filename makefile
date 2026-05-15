@@ -1,5 +1,5 @@
 APP_NAME := hawk-ui
-VERSION := 0.2.0
+VERSION := 0.2.1
 REGISTRY := immnan
 IMAGE := $(REGISTRY)/$(APP_NAME)
 
