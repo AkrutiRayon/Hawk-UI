@@ -74,6 +74,16 @@ const products = {
   puppet: { id: 'puppet', name: 'Puppet', description: 'Infrastructure Automation & Compliance' }
 };
 
+const getDocTimestamp = (doc) => {
+  const rawDate = doc.createdAt || doc.created_at || doc.updatedAt || doc.updated_at || doc.date || doc.timestamp || '';
+  const timestamp = new Date(rawDate).getTime();
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+};
+
+const sortDocsByNewest = (docs) => {
+  return [...docs].sort((a, b) => getDocTimestamp(b) - getDocTimestamp(a));
+};
+
 // HOME ROUTE
 router.get('/', (req, res) => {
   res.render('index', {
@@ -114,10 +124,11 @@ router.get('/:product', async (req, res) => {
 
     console.log(`Fetching docs from: ${url}`);
     const response = await axios.get(url);
+    const docs = Array.isArray(response.data) ? sortDocsByNewest(response.data) : [];
 
 
     res.render('index', {
-      docs: Array.isArray(response.data) ? response.data : [],
+      docs,
       product,
       currentProduct: products[product],
       query: req.query,

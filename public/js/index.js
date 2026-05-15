@@ -61,6 +61,20 @@ function filterRenderedUpdates() {
   });
 }
 
+function sortRenderedUpdatesByNewest() {
+  const feed = document.getElementById("updates-feed");
+  if (!feed) return;
+
+  const cards = Array.from(feed.querySelectorAll(".update-card"));
+  cards
+    .sort((a, b) => {
+      const aTime = new Date(a.querySelector(".time")?.textContent.trim() || "").getTime();
+      const bTime = new Date(b.querySelector(".time")?.textContent.trim() || "").getTime();
+      return (Number.isNaN(bTime) ? 0 : bTime) - (Number.isNaN(aTime) ? 0 : aTime);
+    })
+    .forEach(card => feed.appendChild(card));
+}
+
 // Events
 const productSearch = document.getElementById("product-search");
 if (productSearch) productSearch.addEventListener("input", e => renderProducts(e.target.value));
@@ -115,3 +129,4 @@ document.getElementById("theme-toggle").addEventListener("click", () => {
 if (localStorage.getItem("theme") === "dark" || (!localStorage.getItem("theme") && window.matchMedia("(prefers-color-scheme:dark)").matches)) setTheme(true);
 
 renderProducts();
+sortRenderedUpdatesByNewest();

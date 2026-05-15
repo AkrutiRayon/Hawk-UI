@@ -228,6 +228,26 @@ html.dark .header{background:transparent;border-bottom:none}
   border-color:#3328d9;
   box-shadow:0 12px 26px rgba(68,55,255,.3);
 }
+.filter-btn.active,
+.modal .freq-btn.active,
+.modal .submit-btn{
+  background:#4437ff;
+  border-color:#4437ff;
+  color:#fff;
+  box-shadow:0 10px 22px rgba(68,55,255,.18);
+}
+.filter-btn.active:hover,
+.modal .freq-btn.active:hover,
+.modal .submit-btn:hover{
+  background:#3328d9;
+  border-color:#3328d9;
+  color:#fff;
+}
+.modal .channel-btn.active{
+  border-color:#4437ff;
+  background:rgba(68,55,255,.12);
+  color:#4437ff;
+}
 body.detail-view .page-bg,
 html.dark body.detail-view .page-bg{
   background:#f4f6fb url("../images/hero-blue.svg") top center/100% 96px no-repeat;
