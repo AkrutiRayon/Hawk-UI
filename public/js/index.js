@@ -68,11 +68,36 @@ function sortRenderedUpdatesByNewest() {
   const cards = Array.from(feed.querySelectorAll(".update-card"));
   cards
     .sort((a, b) => {
-      const aTime = new Date(a.querySelector(".time")?.textContent.trim() || "").getTime();
-      const bTime = new Date(b.querySelector(".time")?.textContent.trim() || "").getTime();
+      const aDate = a.querySelector(".time")?.dataset.timestamp || a.querySelector(".time")?.textContent.trim() || "";
+      const bDate = b.querySelector(".time")?.dataset.timestamp || b.querySelector(".time")?.textContent.trim() || "";
+      const aTime = new Date(aDate).getTime();
+      const bTime = new Date(bDate).getTime();
       return (Number.isNaN(bTime) ? 0 : bTime) - (Number.isNaN(aTime) ? 0 : aTime);
     })
     .forEach(card => feed.appendChild(card));
+}
+
+function updateReadMoreButtons() {
+  document.querySelectorAll(".read-more-btn").forEach(btn => {
+    const summary = btn.previousElementSibling;
+    if (!summary) return;
+
+    if (summary.classList.contains("expanded")) {
+      btn.style.display = "";
+      return;
+    }
+
+    summary.classList.add("collapsed");
+    const hasOverflow = summary.scrollHeight > summary.clientHeight + 1;
+
+    if (hasOverflow) {
+      btn.style.display = "";
+      btn.textContent = "Read more";
+    } else {
+      summary.classList.remove("collapsed");
+      btn.style.display = "none";
+    }
+  });
 }
 
 // Events
@@ -91,6 +116,8 @@ document.querySelectorAll(".read-more-btn").forEach(btn => {
     btn.textContent = expanded ? "Show less" : "Read more";
   });
 });
+window.addEventListener("resize", updateReadMoreButtons);
+document.fonts?.ready?.then(updateReadMoreButtons);
 
 const selectedLogo = document.querySelector("[data-logo-for]");
 if (selectedLogo) selectedLogo.innerHTML = logos[selectedLogo.dataset.logoFor] || "";
@@ -130,3 +157,4 @@ if (localStorage.getItem("theme") === "dark" || (!localStorage.getItem("theme") 
 
 renderProducts();
 sortRenderedUpdatesByNewest();
+updateReadMoreButtons();

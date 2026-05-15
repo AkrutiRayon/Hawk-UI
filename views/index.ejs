@@ -111,8 +111,9 @@
             <% if (isLongChange) { %>
               <button class="read-more-btn" type="button">Read more</button>
             <% } %>
-            <div class="time">
-              <% if (doc.createdAt) { %><%= new Date(doc.createdAt).toLocaleString() %><% } %>
+            <% const docTimestamp = doc.createdAt || doc.created_at || doc.updatedAt || doc.updated_at || doc.date || doc.timestamp || ''; %>
+            <div class="time" data-timestamp="<%= docTimestamp %>">
+              <% if (docTimestamp) { %><%= new Date(docTimestamp).toLocaleDateString() %><% } %>
             </div>
             <% if (doc.link) { %>
               <a class="doc-link-btn" href="<%= doc.link %>" target="_blank" rel="noopener">View article</a>
