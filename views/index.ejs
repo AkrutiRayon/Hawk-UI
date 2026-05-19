@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Doc Changes Tracker</title>
-<meta name="description" content="Subscribe to documentation updates across Perforce products">
+<meta name="description" content="Subscribe to magical updates across Perforce products">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="<%= withBasePath('/css/index.css') %>">
 </head>
@@ -102,6 +102,7 @@
         <% docs.forEach(doc => { %>
           <% const changedText = doc.what_changed || ''; %>
           <% const isLongChange = changedText.length > 180; %>
+          <% const docTimestamp = doc.createdAt || doc.created_at || doc.updatedAt || doc.updated_at || doc.date || doc.timestamp || ''; %>
           <div class="update-card">
             <div class="top">
               <h4><%= doc.title %></h4>
@@ -111,7 +112,6 @@
             <% if (isLongChange) { %>
               <button class="read-more-btn" type="button">Read more</button>
             <% } %>
-            <% const docTimestamp = doc.createdAt || doc.created_at || doc.updatedAt || doc.updated_at || doc.date || doc.timestamp || ''; %>
             <div class="time" data-timestamp="<%= docTimestamp %>">
               <% if (docTimestamp) { %><%= new Date(docTimestamp).toLocaleDateString() %><% } %>
             </div>
