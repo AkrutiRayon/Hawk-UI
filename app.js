@@ -157,7 +157,7 @@ app.get('/:product', (req, res, next) => {
   return next();
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   const uiPath = basePath || '';
   console.log(`UI running on http://localhost:${PORT}${uiPath}`);
