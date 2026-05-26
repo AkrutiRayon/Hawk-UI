@@ -101,6 +101,17 @@
       <% if (docs && docs.length > 0) { %>
         <% docs.forEach(doc => { %>
           <% const changedText = doc.what_changed || ''; %>
+          <%
+            const explicitParagraphs = changedText.split(/\n{2,}/).map(text => text.trim()).filter(Boolean);
+            const summarySentences = changedText.match(/[^.!?]+[.!?]+(?=\s|$)|[^.!?]+$/g) || [];
+            const summaryParagraphs = explicitParagraphs.length > 1
+              ? explicitParagraphs
+              : summarySentences.reduce((paragraphs, sentence, index) => {
+                  const paragraphIndex = Math.floor(index / 2);
+                  paragraphs[paragraphIndex] = `${paragraphs[paragraphIndex] || ''}${paragraphs[paragraphIndex] ? ' ' : ''}${sentence.trim()}`;
+                  return paragraphs;
+                }, []).filter(Boolean);
+          %>
           <% const isLongChange = changedText.length > 180; %>
           <% const docTimestamp = doc.createdAt || doc.created_at || doc.updatedAt || doc.updated_at || doc.date || doc.timestamp || ''; %>
           <div class="update-card">
@@ -108,7 +119,11 @@
               <h4><%= doc.title %></h4>
               <span class="tag tag-<%= doc.tag %>"><%= doc.tag %></span>
             </div>
-            <p class="summary <%= isLongChange ? 'collapsed' : '' %>"><%= changedText %></p>
+            <div class="summary <%= isLongChange ? 'collapsed' : '' %>">
+              <% (summaryParagraphs.length ? summaryParagraphs : [changedText]).forEach(paragraph => { %>
+                <p><%= paragraph %></p>
+              <% }) %>
+            </div>
             <% if (isLongChange) { %>
               <button class="read-more-btn" type="button">Read more</button>
             <% } %>
